@@ -8,7 +8,8 @@
   "rules": {
     "sort-imports": "off",
     "react/no-array-index-key": "off",
-    "react/no-set-state": "error"
+    "react/no-set-state": "error",
+    "no-unused-private-class-members": "off"
   },
   "overrides": [
     {
