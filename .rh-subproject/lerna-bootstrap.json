@@ -1,0 +1,11 @@
+{
+  "version": "independent",
+  "npmClient": "yarn",
+  "npmClientArgs": [
+    "--frozen-lockfile"
+  ],
+  "packages": [
+    "packages/*",
+    "../react-containers/packages/*"
+  ]
+}
