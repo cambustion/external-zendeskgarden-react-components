@@ -1,0 +1,54 @@
+#!/bin/bash
+
+set -eu
+set -o pipefail
+
+SDPATH="$(dirname "${BASH_SOURCE[0]}")"
+if [ ! -d "${SDPATH}" ]; then SDPATH="${PWD}"; fi
+readonly SDPATH="$(cd -P "${SDPATH}" && pwd)"
+readonly SDNAME="$(basename "${SDPATH}")"
+
+PRJ_ROOT_PATH="${SDPATH}/.."
+readonly PRJ_ROOT_PATH="$(cd "${PRJ_ROOT_PATH}" && pwd)"
+
+EXT_ROOT_PATH="${PRJ_ROOT_PATH}/../.."
+readonly EXT_ROOT_PATH="$(cd "${EXT_ROOT_PATH}" && pwd)"
+
+cd "${PRJ_ROOT_PATH}" && echo cd "${PWD}"
+
+function restore_package {
+  echo
+  CMD=(mv -vf)
+  CMD+=("${EXT_ROOT_PATH}/package.json.hidden")
+  CMD+=("${EXT_ROOT_PATH}/package.json")
+  echo + "${CMD[@]}" && "${CMD[@]}"
+
+  echo
+  CMD=(mv -vf lerna.json.hidden lerna.json)
+  echo + "${CMD[@]}" && "${CMD[@]}"
+}
+
+trap restore_package EXIT
+
+echo
+CMD=(mv -v)
+CMD+=("${EXT_ROOT_PATH}/package.json")
+CMD+=("${EXT_ROOT_PATH}/package.json.hidden")
+echo + "${CMD[@]}" && "${CMD[@]}"
+
+echo
+CMD=(yarn install --ignore-scripts)
+echo + "${CMD[@]}" && "${CMD[@]}"
+
+echo
+CMD=(mv -v lerna.json lerna.json.hidden)
+echo + "${CMD[@]}" && "${CMD[@]}"
+
+echo
+CMD=(cp -v "${SDNAME}/lerna-bootstrap.json" lerna.json)
+echo + "${CMD[@]}" && "${CMD[@]}"
+
+echo
+#CMD=(yarn lerna bootstrap --ignore-scripts --force-local)
+CMD=(yarn lerna bootstrap --ignore-scripts)
+echo + "${CMD[@]}" && "${CMD[@]}"
